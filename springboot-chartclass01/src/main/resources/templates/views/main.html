@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/main_layout}">
+  	<!-- content -->
+  	<th:block layout:fragment="content">	
+  	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<div class="row my-5" id="global-content">
+			<div class="col-10 offset-1">
+				<div class="row text-center my-3">
+					<div class="col">
+						<h2 class="fs-3 fw-bold">Spring Boot 시각화</h2>
+					</div>
+				</div>
+				<div class="row text-center my-5">
+					<div class="col">
+						jQuery 활용 : 
+						<select id="jQueryAjaxRequest">
+							<option value="cancer">대장암 발병 현황</option>
+							<option value="coffeeShop">커피숍 영업 현황</option>
+							<option value="population">연령별 인구변화</option>
+						</select>
+					</div>
+					<div class="col">
+						VanilaJS(Fetch API) 활용 : 
+						<select id="vanilaAjaxRequest">
+							<option value="cancer">대장암 발병 현황</option>
+							<option value="coffeeShop">커피숍 영업 현황</option>
+							<option value="population">연령별 인구변화</option>
+						</select>
+					</div>
+					<div class="col">
+						Axios 활용 : 
+						<select id="axiosAjaxRequest">
+							<option value="cancer">대장암 발병 현황</option>
+							<option value="coffeeShop">커피숍 영업 현황</option>
+							<option value="population">연령별 인구변화</option>
+						</select>
+					</div>					
+				</div>				
+				
+				<!-- 차트 출력 영역 -->
+				<div class="row">
+					<div class="col">
+					    <div id="mainWordCloud" class="chart--container">
+					      <a href="https://www.zingchart.com/" rel="noopener" class="zc-ref">Powered by ZingChart</a>
+					    </div>
+					</div>
+				</div>				
+			</div>
+		</div>
+		<script>
+			// jQuery를 이용한 Ajax 요청 처리
+			// ===================================================================
+			$("#jQueryAjaxRequest").on("change", function(e) {
+				
+				// 이벤트가 발생된 추체 - e.target
+				let val = $(this).val();
+				
+				$.ajax({
+					url: "ajaxRequest",
+					type: "POST",
+					dataType: "JSON",
+					data: {value: val}, // value=cancer
+					success: function(resData, status, xhr) {
+						
+						if(val == 'cancer') {
+							cancerChartRenderer(resData);
+							
+						} else if(val == "coffeeShop") {
+							coffeeShopChartRenderer(resData);
+							
+						} else {
+							popChartRenderer(resData);
+						}						
+					},
+					error: function(xhr, status, error) {
+						console.log("error : " + status);
+					}				
+				});
+			});
+		
+
+			// VinilaJS(Fetch API)를 이용한 Ajax 요청 처리
+			// ===================================================================				
+			// ECMA Script 2015 -> ES6+ -> 비동기통신 Fetch API - fetch()
+			sBox1 = document.querySelector("#vanilaAjaxRequest");
+			sBox1.addEventListener("change", function(e) {
+				// cancer, coffeeShop, population
+				let params = "value=" + this.value;
+				
+				const result = fetch("ajaxRequest", {
+							method: "post",
+							body: params,
+							headers: {
+								"Content-Type": "application/x-www-form-urlencoded",	
+							}// application/json, text/plan
+						})
+						//.then(function(res11) { return res11.json(); })
+						//.then(function(resData11) { resData11 })
+						.then((res) => res.json())
+						.then(resData => {
+							if(this.value == 'cancer') {
+								cancerChartRenderer(resData);
+								
+							} else if(this.value == "coffeeShop") {
+								coffeeShopChartRenderer(resData);
+								
+							} else {
+								popChartRenderer(resData);
+							}
+						});
+			});
+			
+
+			// Axios 라이브러리를 이용한 Ajax 요청 처리
+			// ===================================================================
+			sBox2 = document.querySelector("#axiosAjaxRequest");
+			sBox2.addEventListener("change", function(e) {
+				// cancer, coffeeShop, population
+				let params = "value=" + this.value;
+				
+				axios("ajaxRequest", {
+					method: "post",
+					data: params,
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded",	
+					}// application/json, text/plan
+				})
+				.then(res => {
+					if(this.value == 'cancer') {
+						cancerChartRenderer(res.data);
+						
+					} else if(this.value == "coffeeShop") {
+						coffeeShopChartRenderer(res.data);
+						
+					} else {
+						popChartRenderer(res.data);
+					}
+				});
+				
+			});
+				
+				
+			// Ajax를 통한 대장암 발병 현황 차트를 출력하는 함수
+			function cancerChartRenderer(data) {
+				console.log("cancerChartRenderer 호출됨");
+				console.log(data);
+				
+				// data를 이용해서 대장암 발병 현황 차트를 출력
+				let serverDatas = data;
+				let datas = []
+				$(serverDatas).each(function(i, v) {
+					if(i >= 2 && i <= 7) {
+						console.log(i + " == " + v);
+						datas.push(v);
+					}
+				});
+				
+				let chartConfig = {
+				  backgroundColor: '#ecf2f6',
+				  graphset: [
+				    {
+				      type: 'bar',
+				      backgroundColor: '#fff',
+				      borderWidth: '1px',
+				      borderColor: '#dae5ec',
+				      width: '96%',
+				      height: '30%',
+				      x: '2%',
+				      y: '3%',
+				      title: {
+				        text: '연령별 대장암 발병 현황',
+				        marginTop: '7px',
+				        marginLeft: '9px',
+				        backgroundColor: 'none',
+				        fontColor: '#707d94',
+				        fontFamily: 'Arial',
+				        fontSize: '11px',
+				        fontWeight: 'bold',
+				        shadow: false,
+				        textAlign: 'left',
+				      },
+				      plot: {
+				        tooltip: {
+				          padding: '5px 10px',
+				          backgroundColor: '#707e94',
+				          borderRadius: '6px',
+				          fontColor: '#fff',
+				          fontFamily: 'Arial',
+				          fontSize: '11px',
+				          shadow: false,
+				        },
+				        animation: {
+				          delay: 500,
+				          effect: 'ANIMATION_SLIDE_BOTTOM',
+				        },
+				        barWidth: '33px',
+				        hoverState: {
+				          visible: false,
+				        },
+				      },
+				      plotarea: {
+				        margin: '45px 20px 38px 45px',
+				      },
+				      scaleX: { // 세로바 차트 x축 라벨
+				        values: [	
+				          '10대', "20대", "30대", "40대", "50대",
+				          '60대', "70대", "80대", "90대", "100대",
+				        ],
+				        guide: {
+				          visible: false,
+				        },
+				        item: {
+				          paddingTop: '2px',
+				          fontColor: '#8391a5',
+				          fontFamily: 'Arial',
+				          fontSize: '11px',
+				        },
+				        itemsOverlap: true,
+				        lineColor: '#d2dae2',
+				        maxItems: 9999,
+				        offsetY: '1px',
+				        tick: {
+				          lineColor: '#d2dae2',
+				          visible: false,
+				        },
+				      },
+				      scaleY: {
+				        values: '0:6000:1000',
+				        guide: {
+				          rules: [
+				            {
+				              lineWidth: '0px',
+				              rule: '%i == 0',
+				            },
+				            {
+				              alpha: 0.4,
+				              lineColor: '#d2dae2',
+				              lineStyle: 'solid',
+				              lineWidth: '1px',
+				              rule: '%i > 0',
+				            },
+				          ],
+				        },
+				        item: {
+				          paddingRight: '5px',
+				          fontColor: '#8391a5',
+				          fontFamily: 'Arial',
+				          fontSize: '10px',
+				        },
+				        lineColor: 'none',
+				        maxItems: 4,
+				        maxTicks: 4,
+				        tick: {
+				          visible: false,
+				        },
+				      },
+				      series: [
+				        {
+				          values: serverDatas,
+				          styles: [
+				            {
+				              backgroundColor: '#4dbac0',
+				            },
+				            {
+				              backgroundColor: '#25a6f7',
+				            },
+				            {
+				              backgroundColor: '#ad6bae',
+				            },
+				            {
+				              backgroundColor: '#707d94',
+				            },
+				            {
+				              backgroundColor: '#f3950d',
+				            },
+				            {
+				              backgroundColor: '#e62163',
+				            },
+				            {
+				              backgroundColor: '#4e74c0',
+				            },
+				            {
+				              backgroundColor: '#9dc012',
+				            },
+				            {
+					         backgroundColor: '#fec1f0',
+					        },
+				            {
+				              backgroundColor: '#9dc012',
+				            },			            
+				          ],
+				        },
+				      ],
+				    },
+				    {	// 가로바 차트
+				      type: 'hbar',
+				      backgroundColor: '#fff',
+				      borderColor: '#dae5ec',
+				      borderWidth: '1px',
+				      width: '30%',
+				      height: '63%',
+				      x: '2%',
+				      y: '35.2%',
+				      title: {
+				        text: '30대 ~ 80대 대장암 발병 현황',
+				        marginTop: '7px',
+				        marginLeft: '9px',
+				        backgroundColor: 'none',
+				        fontColor: '#707d94',
+				        fontFamily: 'Arial',
+				        fontSize: '11px',
+				        shadow: false,
+				        textAlign: 'left',
+				      },
+				      plot: {
+				        tooltip: {
+				          padding: '5px 10px',
+				          backgroundColor: '#707e94',
+				          borderRadius: '6px',
+				          fontColor: '#ffffff',
+				          fontFamily: 'Arial',
+				          fontSize: '11px',
+				          shadow: false,
+				        },
+				        animation: {
+				          delay: 500,
+				          effect: 'ANIMATION_EXPAND_LEFT',
+				        },
+				        barsOverlap: '100%',
+				        barWidth: '12px',
+				        hoverState: {
+				          backgroundColor: '#707e94',
+				        },
+				        thousandsSeparator: ',',
+				      },
+				      plotarea: {
+				        margin: '50px 15px 10px 15px',
+				      },
+				      scaleX: {
+				        values: [
+				          '30대', '40대', '50대',
+				          '60대', '70대', '80대',
+				        ],
+				        guide: {
+				          visible: false,
+				        },
+				        item: {
+				          paddingBottom: '8px',
+				          fontColor: '#8391a5',
+				          fontFamily: 'Arial',
+				          fontSize: '11px',
+				          offsetX: '206px',
+				          offsetY: '-12px',
+				          textAlign: 'left',
+				          width: '200px',
+				        },
+				        lineColor: 'none',
+				        tick: {
+				          visible: false,
+				        },
+				      },
+				      scaleY: {
+				        guide: {
+				          visible: false,
+				        },
+				        item: {
+				          visible: false,
+				        },
+				        lineColor: 'none',
+				        tick: {
+				          visible: false,
+				        },
+				      },
+				      series: [
+				        {
+				          values: datas,
+				          styles: [
+				            {
+				              backgroundColor: '#4dbac0',
+				            },
+				            {
+				              backgroundColor: '#4dbac0',
+				            },
+				            {
+				              backgroundColor: '#4dbac0',
+				            },
+				            {
+				              backgroundColor: '#4dbac0',
+				            },
+				            {
+				              backgroundColor: '#4dbac0',
+				            },
+				            {
+				              backgroundColor: '#4dbac0',
+				            },
+				          ],
+				          tooltipText: '%node-value',
+				          zIndex: 2,
+				        },
+				        {
+				          values: [6000, 6000, 6000, 6000, 6000, 6000],
+				          valueBox: {
+				            text: '%data-rvalues',
+				            paddingBottom: '8px',
+				            fontColor: '#8391a5',
+				            fontFamily: 'Arial',
+				            fontSize: '11px',
+				            offsetX: '-54px',
+				            offsetY: '-12px',
+				            textAlign: 'right',
+				            visible: true,
+				          },
+				          backgroundColor: '#d9e4eb',
+				          dataRvalues: datas,
+				          maxTrackers: 0,
+				          zIndex: 1,
+				        },
+				      ],
+				    },
+				    {	// 라인 차트 영역
+				      type: 'line',
+				      backgroundColor: '#fff',
+				      borderColor: '#dae5ec',
+				      borderWidth: '1px',
+				      width: '64%',
+				      height: '63%',
+				      x: '34%',
+				      y: '35.2%',
+				      title: {
+				        text: "대장암 발병 현황",
+				        marginTop: '7px',
+				        marginLeft: '12px',
+				        backgroundColor: 'none',
+				        fontColor: '#707d94',
+				        fontFamily: 'Arial',
+				        fontSize: '11px',
+				        shadow: false,
+				        textAlign: 'left',
+				      },
+				      legend: {
+				        margin: 'auto auto 15 auto',
+				        backgroundColor: 'none',
+				        borderWidth: '0px',
+				        item: {
+				          margin: '0px',
+				          padding: '0px',
+				          fontColor: '#707d94',
+				          fontFamily: 'Arial',
+				          fontSize: '9px',
+				        },
+				        layout: 'x4',
+				        marker: {
+				          type: 'match',
+				          padding: '3px',
+				          fontFamily: 'Arial',
+				          fontSize: '10px',
+				          lineWidth: '2px',
+				          showLine: 'true',
+				          size: 4,
+				        },
+				        shadow: false,
+				      },
+				      plot: {
+				        tooltip: {
+				          visible: false,
+				        },
+				        animation: {
+				          delay: 500,
+				          effect: 'ANIMATION_SLIDE_LEFT',
+				        },
+				      },
+				      plotarea: {
+				        margin: '50px 25px 70px 46px',
+				      },
+				      scaleX: {
+				        values: [
+				        	'10대', "20대", "30대", "40대", "50대",
+					        '60대', "70대", "80대", "90대", "100대",
+				        ],
+				        guide: {
+				          visible: false,
+				        },
+				        item: {
+				          paddingTop: '5px',
+				          fontColor: '#8391a5',
+				          fontFamily: 'Arial',
+				          fontSize: '10px',
+				        },
+				        lineColor: '#d2dae2',
+				        lineWidth: '2px',
+				        tick: {
+				          lineColor: '#d2dae2',
+				          lineWidth: '1px',
+				        },
+				      },
+				      scaleY: {
+				        values: '0:6000:1000',
+				        guide: {
+				          alpha: 0.5,
+				          lineColor: '#d2dae2',
+				          lineStyle: 'solid',
+				          lineWidth: '1px',
+				        },
+				        item: {
+				          paddingRight: '5px',
+				          fontColor: '#8391a5',
+				          fontFamily: 'Arial',
+				          fontSize: '10px',
+				        },
+				        lineColor: 'none',
+				        tick: {
+				          visible: false,
+				        },
+				      },
+				      scaleLabel: {
+				        padding: '5px 10px',
+				        backgroundColor: '#707d94',
+				        borderRadius: '5px',
+				        fontColor: '#ffffff',
+				        fontFamily: 'Arial',
+				        fontSize: '10px',
+				      },
+				      crosshairX: {
+				        lineColor: '#707d94',
+				        lineWidth: '1px',
+				        plotLabel: {
+				          padding: '5px 10px',
+				          alpha: 1,
+				          borderRadius: '5px',
+				          fontColor: '#000',
+				          fontFamily: 'Arial',
+				          fontSize: '10px',
+				          shadow: false,
+				        },
+				      },
+				      series: [
+				        {
+				          text: '연령별 대장암 발병 현황',
+				          values: serverDatas,
+				          lineColor: '#4dbac0',
+				          lineWidth: '2px',
+				          marker: {
+				            backgroundColor: '#fff',
+				            borderColor: '#36a2a8',
+				            borderWidth: '1px',
+				            shadow: false,
+				            size: 3,
+				          },
+				          palette: 0,
+				          shadow: false,
+				        }
+				      ],
+				    },
+				  ],
+				};
+		
+				zingchart.render({
+				  id: 'mainWordCloud',
+				  data: chartConfig,
+				  height: '100%',
+				  width: '100%',
+				});					
+			}
+			
+			// Ajax를 통한 커피숍 영업 현황 차트를 출력하는 함수
+			function coffeeShopChartRenderer(data) {
+				console.log("coffeeShopChartRenderer 호출됨");
+				console.log(data);
+				
+				// data를 이용해서 커피숍 영업 현황을 차트로 출력
+				let shopData = data;
+				
+				// DEFINE DATA
+				// -----------------------------
+				let chartData = [
+				  {
+				    text: '개업',
+				    values: shopData.open,
+				    legendMarker: {
+				      type: 'circle',
+				      backgroundColor: '#007790',
+				      borderColor: '#69dbf1',
+				      borderWidth: '1px',
+				      shadow: false,
+				      size: '5px'
+				    },
+				    lineColor: '#007790',
+				    marker: {
+				      backgroundColor: '#007790',
+				      borderColor: '#69dbf1',
+				      borderWidth: '1px',
+				      shadow: false
+				    }
+				  },
+				  {
+				    text: '폐업',
+				    values: shopData.close,
+				    legendMarker: {
+				      type: 'circle',
+				      backgroundColor: '#da534d',
+				      borderColor: '#faa39f',
+				      borderWidth: '1px',
+				      shadow: false,
+				      size: '5px'
+				    },
+				    lineColor: '#da534d',
+				    marker: {
+				      backgroundColor: '#da534d',
+				      borderColor: '#faa39f',
+				      borderWidth: '1px',
+				      shadow: false
+				    }
+				  }
+				];
+
+				// CHART CONFIG
+				// -----------------------------
+				let chartConfig = {
+				  type: 'line',
+				  theme: 'classic',
+				  backgroundColor: '#003849',
+				  utc: true,
+				  title: {
+				    text: '',
+				    backgroundColor: '#003849',
+				    fontColor: 'white',
+				    fontSize: '24px',
+				    height: '25px',
+				    y: '7px'
+				  },
+				  legend: {
+				    align: 'center',
+				    backgroundColor: 'none',
+				    borderWidth: '0px',
+				    item: {
+				      fontColor: '#f6f7f8',
+				      fontSize: '14px'
+				    },
+				    layout: 'float',
+				    offsetY: '35px',
+				    shadow: false,
+				    textAlign: 'middle'
+				  },
+				  plot: {
+				    hoverMarker: {
+				      type: 'circle',
+				      borderWidth: '1px',
+				      size: '4px'
+				    },
+				    lineWidth: '3px',
+				    marker: {
+				      type: 'circle',
+				      size: '3px'
+				    },
+				    shadow: false,
+				    tooltipText: '%t views: %v<br>%k'
+				  },
+				  plotarea: {
+				    margin: '20% 8% 14% 12%',
+				    backgroundColor: '#003849'
+				  },
+				  scaleX: {
+				    guide: {
+				      lineColor: '#f6f7f8'
+				    },
+				    item: {
+				      fontColor: '#f6f7f8'
+				    },
+				    label: {
+				      visible: false
+				    },
+				    lineColor: '#f6f7f8',
+				    minorTicks: 0,
+				    // new Date("2024-01-01")
+				    minValue: new Date(shopData.year[0] + "-01-01").getTime(), 
+				    shadow: false,
+				    step: new Date(shopData.year[1] + "-01-01")
+				    	- new Date(shopData.year[0] + "-01-01"),
+				    tick: {
+				      lineColor: '#f6f7f8'
+				    },
+				    transform: {
+				      type: 'date',
+				      all: '%Y',
+				      item: {
+				        visible: false
+				      }
+				    }
+				  },
+				  scaleY: {
+				    values: '0:10000:1000',
+				    guide: {
+				      lineColor: '#f6f7f8',
+				      lineStyle: 'dashed'
+				    },
+				    item: {
+				      fontColor: '#f6f7f8'
+				    },
+				    label: {
+				      text: '',
+				      fontColor: '#f6f7f8'
+				    },
+				    lineColor: '#f6f7f8',
+				    minorTicks: 0,
+				    shadow: false,
+				    thousandsSeparator: ',',
+				    tick: {
+				      lineColor: '#f6f7f8'
+				    }
+				  },
+				  crosshairX: {
+				    lineColor: '#f6f7f8',
+				    plotLabel: {
+				      padding: '10px',
+				      borderColor: '#f6f7f8',
+				      borderRadius: '5px',
+				      borderWidth: '1px',
+				      fontWeight: 'bold'
+				    },
+				    scaleLabel: {
+				      backgroundColor: '#f6f7f8',
+				      borderRadius: '5px',
+				      fontColor: '#00baf0'
+				    }
+				  },
+				  tooltip: {
+				    visible: false
+				  },
+				  series: chartData
+				};
+
+				// RENDER CHARTS
+				// -----------------------------
+				zingchart.render({
+				  id: 'mainWordCloud',
+				  data: chartConfig
+				});
+				
+			}
+			
+			// Ajax를 통한 연령별 인구 변화 차트를 출력하는 함수
+			function popChartRenderer(data) {
+				console.log("popChartRenderer 호출됨");
+				console.log(data);	
+				
+				let popData = data;
+
+				let chartConfig = {
+					  type: 'area',
+					  title: {
+					    text: '',
+					    adjustLayout: true,
+					    fontColor: '#424242',
+					    marginTop: '15px',
+					  },
+					  subtitle: {
+					    text: '',
+					    adjustLayout: true,
+					    fontColor: '#616161',
+					    marginTop: '45px',
+					  },
+
+					  plot: {
+					    tooltip: {
+					      visible: false,
+					    },
+					    alphaArea: 0.6,
+					    aspect: 'spline',
+					    stacked: true,
+					  },
+					  plotarea: {
+					    margin: 'dynamic',
+					  },
+					  scaleX: {
+					    item: {
+					      fontColor: '#616161',
+					      paddingTop: '5px',
+					    },
+					    label: {
+					      fontColor: '#616161',
+					      text: '년도',
+					    },
+					    labels: popData.time,
+					    lineColor: '#AAA5A5',
+					    tick: {
+					      lineColor: '#AAA5A5',
+					    },
+					  },
+					  scaleY: {
+					    guide: {
+					      lineColor: '#AAA5A5',
+					      lineStyle: 'dotted',
+					    },
+					    item: {
+					      fontColor: '#616161',
+					      paddingRight: '5px',
+					    },
+					    label: {
+					      fontColor: '#616161',
+					      text: '연령대',
+					    },
+					    lineColor: '#AAA5A5',
+					    short: true,
+					    shortUnit: 'k',
+					    tick: {
+					      lineColor: '#AAA5A5',
+					    },
+					  },
+					  crosshairX: {
+					    lineColor: '#AAA5A5',
+					    plotLabel: {
+					      backgroundColor: '#EBEBEC',
+					      borderColor: '#AAA5A5',
+					      borderRadius: '2px',
+					      borderWidth: '2px',
+					      fontColor: '#616161',
+					      thousandsSeparator: ',',
+					    },
+					    scaleLabel: {
+					      backgroundColor: '#EBEBEC',
+					      borderColor: '#AAA5A5',
+					      fontColor: '#424242',
+					    },
+					  },
+					  series: [
+					    {
+					      text: '0s',
+					      values: popData.age0Group,
+					      backgroundColor: '#4CAF50',
+					      lineColor: '#4CAF50',
+					      marker: {
+					        backgroundColor: '#4CAF50',
+					        borderColor: '#4CAF50',
+					      },
+					    },
+					    {
+					      text: '10s',
+					      values: popData.age10Group,
+					      backgroundColor: '#E53935',
+					      lineColor: '#E53935',
+					      marker: {
+					        backgroundColor: '#E53935',
+					        borderColor: '#E53935',
+					      },
+					    },
+					    {
+					      text: '20s',
+					      values: popData.age20Group,
+					      backgroundColor: '#00BCD4',
+					      lineColor: '#00BCD4',
+					      marker: {
+					        backgroundColor: '#00BCD4',
+					        borderColor: '#00BCD4',
+					      },
+					    },
+					    {
+					      text: '30s',
+					      values: popData.age30Group,
+					      backgroundColor: '#E6AA63',
+					      lineColor: '#E6AA63',
+					      marker: {
+					        backgroundColor: '#E6AA63',
+					        borderColor: '#E6AA63',
+					      },
+					    },
+					    {
+					      text: '40s',
+					      values: popData.age40Group,
+					      backgroundColor: '#AD6BAE',
+					      lineColor: '#AD6BAE',
+					      marker: {
+					        backgroundColor: '#AD6BAE',
+					        borderColor: '#AD6BAE',
+					      },
+					    },
+					    {
+					      text: '50s',
+					      values: popData.age50Group,
+					      backgroundColor: '#707D94',
+					      lineColor: '#707D94',
+					      marker: {
+					        backgroundColor: '#707D94',
+					        borderColor: '#707D94',
+					      },
+					    },
+					    {
+					      text: '60s',
+					      values: popData.age60Group,
+					      backgroundColor: '#F3950D',
+					      lineColor: '#F3950D',
+					      marker: {
+					        backgroundColor: '#F3950D',
+					        borderColor: '#F3950D',
+					      },
+					    },
+					    {
+					      text: '70s',
+					      values: popData.age70Group,
+					      backgroundColor: '#4E74C0',
+					      lineColor: '#4E74C0',
+					      marker: {
+					        backgroundColor: '#4E74C0',
+					        borderColor: '#4E74C0',
+					      },
+					    },
+					    {
+					      text: '80s',
+					      values: popData.age80Group,
+					      backgroundColor: '#9DC012',
+					      lineColor: '#9DC012',
+					      marker: {
+					        backgroundColor: '#9DC012',
+					        borderColor: '#9DC012',
+					      },
+					    },
+					    {
+					      text: '90s',
+					      values: popData.age90Group,
+					      backgroundColor: '#1DC0C2',
+					      lineColor: '#1DC0C2',
+					      marker: {
+					        backgroundColor: '#1DC0C2',
+					        borderColor: '#1DC0C2',
+					      },
+					    },				    
+					  ],
+					};
+
+					zingchart.render({
+					  id: 'mainWordCloud',
+					  data: chartConfig,
+					  height: '100%',
+					  width: '100%',
+					});
+			}
+				
+				
+			// WordCloud 
+			// -----------------------------
+			let chartConfig = {
+			  type: 'wordcloud',
+			  options: {
+			    text: "SpringBoot 웹시각화 SpringBoot 스프링부트 대장암발병현황 커피숍영업현황 연령별 인구 현황 "
+			    	+ "SpringBoot 웹시각화 SpringBoot 스프링부트 대장암발병현황 커피숍영업현황 연령별인구현황"
+			    	+ "SpringBoot 웹시각화 SpringBoot 스프링부트 대장암발병현황 커피숍영업현황 연령별인구현황",
+			    aspect: 'spiral',
+			    colorType: 'palette',
+			    ignore: ['establish', 'this'],
+			    maxItems: 50,
+			    minLength: '4px',
+			    palette: [
+			      '#D32F2F',
+			      '#1976D2',
+			      '#9E9E9E',
+			      '#E53935',
+			      '#1E88E5',
+			      '#7E57C2',
+			      '#F44336',
+			      '#2196F3',
+			      '#A1887F',
+			    ],
+			    rotate: true,
+			    style: {
+			      tooltip: {
+			        text: "워드클라우드",
+			        padding: '5px',
+			        alpha: 0.9,
+			        backgroundColor: '#D32F2F',
+			        borderColor: 'none',
+			        borderRadius: '3px',
+			        fontColor: 'white',
+			        fontFamily: 'Georgia',
+			        textAlpha: 1,
+			        visible: true,
+			        width: '400px',
+			        wrapText: true,
+			      },
+			      fontFamily: 'Merriweather',
+			      hoverState: {
+			        backgroundColor: '#1976D2',
+			        borderColor: 'none',
+			        borderRadius: '3px',
+			        fontColor: 'white',
+			      },
+			    },
+			  },
+			};
+	
+			// RENDER CHARTS
+			// -----------------------------
+			zingchart.render({
+			  id: 'mainWordCloud',
+			  data: chartConfig,
+			});		
+		</script>
+	</th:block>
+</html>

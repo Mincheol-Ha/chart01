@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/main_layout}">
+  	<!-- content -->
+  	<th:block layout:fragment="content">	
+		<div class="row my-5" id="global-content">
+			<div class="col-10 offset-1">
+				<div class="row text-center my-3">
+					<div class="col">
+						<h2 class="fs-3 fw-bold">연령별 인구 변화</h2>
+					</div>
+				</div>
+				<!-- 차트 출력 영역 -->
+				<div class="row">
+					<div class="col">
+					    <div id="popChart" class="chart--container">
+					      <a href="https://www.zingchart.com/" rel="noopener" class="zc-ref">Powered by ZingChart</a>
+					    </div>
+					</div>
+				</div>				
+			</div>
+		</div>
+		<script th:inline="javascript">
+			let popData = [[${popData}]];
+
+			let chartConfig = {
+				  type: 'area',
+				  title: {
+				    text: '',
+				    adjustLayout: true,
+				    fontColor: '#424242',
+				    marginTop: '15px',
+				  },
+				  subtitle: {
+				    text: '',
+				    adjustLayout: true,
+				    fontColor: '#616161',
+				    marginTop: '45px',
+				  },
+
+				  plot: {
+				    tooltip: {
+				      visible: false,
+				    },
+				    alphaArea: 0.6,
+				    aspect: 'spline',
+				    stacked: true,
+				  },
+				  plotarea: {
+				    margin: 'dynamic',
+				  },
+				  scaleX: {
+				    item: {
+				      fontColor: '#616161',
+				      paddingTop: '5px',
+				    },
+				    label: {
+				      fontColor: '#616161',
+				      text: '년도',
+				    },
+				    labels: popData.time,
+				    lineColor: '#AAA5A5',
+				    tick: {
+				      lineColor: '#AAA5A5',
+				    },
+				  },
+				  scaleY: {
+				    guide: {
+				      lineColor: '#AAA5A5',
+				      lineStyle: 'dotted',
+				    },
+				    item: {
+				      fontColor: '#616161',
+				      paddingRight: '5px',
+				    },
+				    label: {
+				      fontColor: '#616161',
+				      text: '연령대',
+				    },
+				    lineColor: '#AAA5A5',
+				    short: true,
+				    shortUnit: 'k',
+				    tick: {
+				      lineColor: '#AAA5A5',
+				    },
+				  },
+				  crosshairX: {
+				    lineColor: '#AAA5A5',
+				    plotLabel: {
+				      backgroundColor: '#EBEBEC',
+				      borderColor: '#AAA5A5',
+				      borderRadius: '2px',
+				      borderWidth: '2px',
+				      fontColor: '#616161',
+				      thousandsSeparator: ',',
+				    },
+				    scaleLabel: {
+				      backgroundColor: '#EBEBEC',
+				      borderColor: '#AAA5A5',
+				      fontColor: '#424242',
+				    },
+				  },
+				  series: [
+				    {
+				      text: '0s',
+				      values: popData.age0Group,
+				      backgroundColor: '#4CAF50',
+				      lineColor: '#4CAF50',
+				      marker: {
+				        backgroundColor: '#4CAF50',
+				        borderColor: '#4CAF50',
+				      },
+				    },
+				    {
+				      text: '10s',
+				      values: popData.age10Group,
+				      backgroundColor: '#E53935',
+				      lineColor: '#E53935',
+				      marker: {
+				        backgroundColor: '#E53935',
+				        borderColor: '#E53935',
+				      },
+				    },
+				    {
+				      text: '20s',
+				      values: popData.age20Group,
+				      backgroundColor: '#00BCD4',
+				      lineColor: '#00BCD4',
+				      marker: {
+				        backgroundColor: '#00BCD4',
+				        borderColor: '#00BCD4',
+				      },
+				    },
+				    {
+				      text: '30s',
+				      values: popData.age30Group,
+				      backgroundColor: '#E6AA63',
+				      lineColor: '#E6AA63',
+				      marker: {
+				        backgroundColor: '#E6AA63',
+				        borderColor: '#E6AA63',
+				      },
+				    },
+				    {
+				      text: '40s',
+				      values: popData.age40Group,
+				      backgroundColor: '#AD6BAE',
+				      lineColor: '#AD6BAE',
+				      marker: {
+				        backgroundColor: '#AD6BAE',
+				        borderColor: '#AD6BAE',
+				      },
+				    },
+				    {
+				      text: '50s',
+				      values: popData.age50Group,
+				      backgroundColor: '#707D94',
+				      lineColor: '#707D94',
+				      marker: {
+				        backgroundColor: '#707D94',
+				        borderColor: '#707D94',
+				      },
+				    },
+				    {
+				      text: '60s',
+				      values: popData.age60Group,
+				      backgroundColor: '#F3950D',
+				      lineColor: '#F3950D',
+				      marker: {
+				        backgroundColor: '#F3950D',
+				        borderColor: '#F3950D',
+				      },
+				    },
+				    {
+				      text: '70s',
+				      values: popData.age70Group,
+				      backgroundColor: '#4E74C0',
+				      lineColor: '#4E74C0',
+				      marker: {
+				        backgroundColor: '#4E74C0',
+				        borderColor: '#4E74C0',
+				      },
+				    },
+				    {
+				      text: '80s',
+				      values: popData.age80Group,
+				      backgroundColor: '#9DC012',
+				      lineColor: '#9DC012',
+				      marker: {
+				        backgroundColor: '#9DC012',
+				        borderColor: '#9DC012',
+				      },
+				    },
+				    {
+				      text: '90s',
+				      values: popData.age90Group,
+				      backgroundColor: '#1DC0C2',
+				      lineColor: '#1DC0C2',
+				      marker: {
+				        backgroundColor: '#1DC0C2',
+				        borderColor: '#1DC0C2',
+				      },
+				    },				    
+				  ],
+				};
+
+				zingchart.render({
+				  id: 'popChart',
+				  data: chartConfig,
+				  height: '100%',
+				  width: '100%',
+				});
+		</script>
+	</th:block>
+</html>

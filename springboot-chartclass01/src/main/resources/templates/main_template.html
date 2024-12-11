@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SpringBoot-Visualization</title>
+    <link th:href="@{bootstrap/bootstrap.min.css}" rel="stylesheet" >
+    <script th:src="@{js/jquery-3.7.1.min.js}"></script>
+    <style>      	
+    </style>
+  </head>
+  <body>
+  	<div class="container">
+  		<!-- header  -->
+  		<div class="row border-bottom border-primary">
+  			<div class="col-2">
+  				<p><a href="/"><img src="https://via.placeholder.com/200x100"></a></p>
+  			</div>
+  			<div class="col-10">
+  				<div class="row">
+  					<div class="col">
+  						<ul class="nav justify-content-end">
+  							<li class="nav-item">
+  								<a class="nav-link" href="cancer">대장암 발병 현황</a>
+  							</li>
+  							<li class="nav-item">
+  								<a class="nav-link" href="coffeeShop">커피숍 영업 현황</a>
+  							</li>
+  							<li class="nav-item">
+  								<a class="nav-link" href="popTimeSeries">연령별 인구 변화</a>
+  							</li>
+  							<li class="nav-item">
+  								<a class="nav-link" href="http://www.zingchart.com">ZingChart</a>
+  							</li>
+  							<li class="nav-item">
+  								<a class="nav-link" href="http://www.chartjs.org">Chart.js</a>
+  							</li>
+  							<li class="nav-item">
+  								<a class="nav-link" href="http://echarts.apache.org">Apache ECharts</a>
+  							</li>
+  							<li class="nav-item">
+  								<a class="nav-link" href="http://d3js.org">D3.js</a>
+  							</li>   							
+  						</ul>
+  					</div>
+  				</div>
+  			</div>
+  		</div>
+  		<!-- content -->
+		<div class="row my-5" id="global-content">
+			<div class="col-10 offset-1">
+				<div class="row text-center my-3">
+					<div class="col">
+						<h2 class="fs-3 fw-bold">Spring Boot 시각화</h2>
+					</div>
+				</div>
+				<!-- 차트 출력 영역 -->
+				<div class="row">
+					<div class="col">
+					</div>
+				</div>				
+			</div>
+		</div>		
+  		<!-- footer -->
+  		<div class="row border-top border-primary my-5">
+  			<div class="col text-center py-3">
+  				<p>고객상담 전화주문:1234-5678 사업자등록번호 :111-11-123456  
+      	대표이사: 홍길동  통신판매업 서울 제 000000호<br/>
+      	개인정보관리책임자:임꺽정 분쟁조정기관표시 : 소비자보호원, 전자거래분쟁중재위원회<br/>      	
+      	Copyright (c) 2016 Spring2U Corp. All right Reserved.	
+  				</p>
+  			</div>
+  		</div>
+		</div>
+    <script th:src="@{bootstrap/bootstrap.bundle.min.js}"></script>
+  </body>
+</html>
