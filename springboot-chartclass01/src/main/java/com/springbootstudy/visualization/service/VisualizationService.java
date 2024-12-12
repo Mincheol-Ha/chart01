@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.springbootstudy.visualization.domain.Cancer;
 import com.springbootstudy.visualization.domain.CoffeeShop;
+import com.springbootstudy.visualization.domain.Doctors;
 import com.springbootstudy.visualization.domain.PopTimeSeries;
 import com.springbootstudy.visualization.domain.Population;
 import com.springbootstudy.visualization.mapper.VisualizationMapper;
@@ -17,6 +18,20 @@ public class VisualizationService {
 
 	@Autowired
 	private VisualizationMapper visualizationMapper;
+	
+	public Doctors doctorsData() { 
+		Doctors doctors = new Doctors();
+		doctors.setYear(visualizationMapper.doctorsData("year"));
+		doctors.setDmale(visualizationMapper.doctorsData("dmale"));
+		doctors.setDfemale(visualizationMapper.doctorsData("dfemale"));
+		doctors.setKdmale(visualizationMapper.doctorsData("kdmale"));
+		doctors.setKdfemale(visualizationMapper.doctorsData("kdfemale"));
+		
+		return doctors;
+	}
+	
+	
+	
 	
 	public PopTimeSeries popTimeSeries() {
 		

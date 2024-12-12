@@ -16,25 +16,28 @@
 					<div class="col">
 						jQuery 활용 : 
 						<select id="jQueryAjaxRequest">
-							<option value="cancer">대장암 발병 현황</option>
-							<option value="coffeeShop">커피숍 영업 현황</option>
-							<option value="population">연령별 인구변화</option>
+							<option value="cancer">대장암 발병 수</option>
+							<option value="coffeeShop">커피숍 현황</option>
+							<option value="population">연령대별 인구 조사</option>
+							<option value="doctors">연도별 의사 수</option>
 						</select>
 					</div>
 					<div class="col">
 						VanilaJS(Fetch API) 활용 : 
 						<select id="vanilaAjaxRequest">
-							<option value="cancer">대장암 발병 현황</option>
-							<option value="coffeeShop">커피숍 영업 현황</option>
-							<option value="population">연령별 인구변화</option>
+							<option value="cancer">대장암 발병 수</option>
+							<option value="coffeeShop">커피숍 현황</option>
+							<option value="population">연령대별 인구 조사</option>
+							<option value="doctors">연도별 의사 수</option>
 						</select>
 					</div>
 					<div class="col">
 						Axios 활용 : 
 						<select id="axiosAjaxRequest">
-							<option value="cancer">대장암 발병 현황</option>
-							<option value="coffeeShop">커피숍 영업 현황</option>
-							<option value="population">연령별 인구변화</option>
+							<option value="cancer">대장암 발병 수</option>
+							<option value="coffeeShop">커피숍 현황</option>
+							<option value="population">연령대별 인구 조사</option>
+							<option value="doctors">연도별 의사 수</option>
 						</select>
 					</div>					
 				</div>				
@@ -69,6 +72,9 @@
 							
 						} else if(val == "coffeeShop") {
 							coffeeShopChartRenderer(resData);
+						
+						} else if(val == "doctors") {
+							doctorsChartRenderer(resData);
 							
 						} else {
 							popChartRenderer(resData);
@@ -106,6 +112,9 @@
 							} else if(this.value == "coffeeShop") {
 								coffeeShopChartRenderer(resData);
 								
+							} else if(this.value == "doctors") {
+								doctorsChartRenderer(resData);
+								
 							} else {
 								popChartRenderer(resData);
 							}
@@ -133,6 +142,9 @@
 						
 					} else if(this.value == "coffeeShop") {
 						coffeeShopChartRenderer(res.data);
+					
+					} else if(this.value == "doctors") {
+						doctorsChartRenderer(res.data);
 						
 					} else {
 						popChartRenderer(res.data);
@@ -140,7 +152,90 @@
 				});
 				
 			});
+			
+			// Ajax를 통한 연도별 의사 수 차트를 출력하는 함수
+			function doctorsChartRenderer(data) {
 				
+				let doctorsData = data;
+
+				let chartConfig = {
+						  type: 'vbar',
+						  globals: {
+						    fontFamily: 'Lato',
+						  },
+						  plot: {
+						    tooltip: {
+						      visible: false,
+						    },
+						    'bars-space-left': 0.15,
+						    'bars-space-right': 0.15,
+						  },
+						  plotarea: {
+						    margin: 'dynamic',
+						  },
+						  scaleX: {
+						    values: [
+						      '2010',
+						      '2011',
+						      '2012',
+						      '2013',
+						      '2014',
+						      '2015',
+						      '2016',
+						      '2017',
+						      '2018',
+						      '2019',
+						      '2020',
+						      '2021',
+						      '2022',
+						    ],
+						    item: {
+						      offsetY: -5,
+						      angle: 270,
+						    },
+						    tick: {
+						      size: 10,
+						    },
+						  },
+						  series: [
+						    {
+						      text: '의사_남',
+						      values: [
+						        78433, 80348, 82216, 83352, 85009, 87378, 88898, 90681, 91094, 93586, 95002, 96688, 98413,
+						      ],
+						    },
+						    {
+						      text: '의사_여',
+						      values: [
+						        22938, 23984, 25005, 26148, 27398, 28598, 29798, 30890, 32012, 33138, 34240, 35325, 36488,
+						      ],
+						    },
+						    {
+						      text: '한지의사_남',
+						      values: [
+						       66, 63, 68, 57, 63, 64, 64, 62, 62, 67, 48, 48, 48,
+						      ],
+						    },
+						    {
+						      text: '한지의사_여',
+						      values: [
+						        6, 2, 6, 6, 6, 5, 5, 5, 5, 4, 4, 4, 43,
+						      ],
+						    },
+						  ],
+						  crosshairX: {
+						    lineWidth: '100%',
+						    alpha: 0.4,
+						  },
+						};
+
+					zingchart.render({
+					  id: 'mainWordCloud',
+					  data: chartConfig,
+					  height: '100%',
+					  width: '100%',
+					});
+			}
 				
 			// Ajax를 통한 대장암 발병 현황 차트를 출력하는 함수
 			function cancerChartRenderer(data) {
@@ -942,9 +1037,9 @@
 			let chartConfig = {
 			  type: 'wordcloud',
 			  options: {
-			    text: "SpringBoot 웹시각화 SpringBoot 스프링부트 대장암발병현황 커피숍영업현황 연령별 인구 현황 "
-			    	+ "SpringBoot 웹시각화 SpringBoot 스프링부트 대장암발병현황 커피숍영업현황 연령별인구현황"
-			    	+ "SpringBoot 웹시각화 SpringBoot 스프링부트 대장암발병현황 커피숍영업현황 연령별인구현황",
+			    text: "SpringBoot 웹시각화 SpringBoot 연도별의사 대장암발병현황 커피숍영업현황 연령별 인구 현황"
+			    	+ "SpringBoot 웹시각화 SpringBoot 연도별의사 대장암발병현황 커피숍영업현황 연령별인구현황"
+			    	+ "SpringBoot 웹시각화 SpringBoot 연도별의사 대장암발병현황 커피숍영업현황 연령별인구현황",
 			    aspect: 'spiral',
 			    colorType: 'palette',
 			    ignore: ['establish', 'this'],

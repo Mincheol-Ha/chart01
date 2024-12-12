@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springbootstudy.visualization.domain.CoffeeShop;
+import com.springbootstudy.visualization.domain.Doctors;
 import com.springbootstudy.visualization.domain.PopTimeSeries;
 import com.springbootstudy.visualization.service.VisualizationService;
 
@@ -21,6 +22,15 @@ import lombok.RequiredArgsConstructor;
 public class VisualizationController {
 	
 	private final VisualizationService service;
+	
+	@GetMapping("/doctors")
+	public String doctors(Model model) {
+		
+		Doctors doctors = service.doctorsData();
+		model.addAttribute("doctorsData", doctors);
+		
+		return "views/doctors";
+	}
 	
 	// Ajax 요청을 처리하는 메서드
 	@PostMapping("/ajaxRequest")
@@ -33,6 +43,9 @@ public class VisualizationController {
 			
 		} else if(value.equals("cancer")) {
 			return service.cancerData();
+		
+		} else if(value.equals("doctors")) {
+			return service.doctorsData();
 			
 		} else {
 			return service.popTimeSeries();

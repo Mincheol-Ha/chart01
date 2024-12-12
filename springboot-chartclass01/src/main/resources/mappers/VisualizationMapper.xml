@@ -13,6 +13,11 @@
 -->
 <mapper namespace="com.springbootstudy.visualization.mapper.VisualizationMapper" >
 
+
+	<select id="doctorsData" resultType="int">
+		SELECT ${col} FROM doctors
+	</select>
+
 	<!-- 시간에 따른 인구 현황을 DB 테이블에서 읽어오는 맵핑 구문 -->
 	<select id="populationList" resultType="Population">
 		SELECT * FROM pop_time_series

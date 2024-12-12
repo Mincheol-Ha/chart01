@@ -9,6 +9,10 @@ import com.springbootstudy.visualization.domain.Population;
 
 @Mapper
 public interface VisualizationMapper {
+	
+	
+	public List<Integer> doctorsData(String columnName);
+	
 	// 연령대별 인구 현황 리스트를 읽어오는 메서드
 	public List<Population> populationList();
 	
